@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Wie-Fragen – Lernen in einer Kultur der Digitalität</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,700;1,300&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --card-bg: #FFFDF8;
+    --accent: #D4501A;
+    --accent-light: #F5E6DF;
+    --text: #1A1A18;
+    --text-muted: #7A7A72;
+    --border: #E0D8CC;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 16px 32px;
+    color: var(--text);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 480px;
+  }
+  header .label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(16px, 4vw, 21px);
+    line-height: 1.3;
+  }
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 16px;
+  }
+  .filter-btn {
+    padding: 7px 13px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--card-bg);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    min-height: 36px;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  .progress-bar {
+    width: 100%;
+    max-width: 480px;
+    height: 7px;
+    background: var(--border);
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .card-container {
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 16px;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    min-height: 200px;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent);
+  }
+  .card.hidden { opacity: 0; transform: translateY(6px); }
+
+  .card-wie {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(16px, 3.5vw, 20px);
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .card-question {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(20px, 4.5vw, 26px);
+    line-height: 1.4;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .card-tag {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    max-width: 480px;
+  }
+  .btn {
+    flex: 1;
+    padding: 0 16px;
+    height: 52px;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:active { background: #B8401A; transform: scale(0.98); }
+  .btn-icon {
+    background: var(--card-bg);
+    color: var(--text-muted);
+    border: 1.5px solid var(--border);
+    flex: 0 0 52px;
+    font-size: 18px;
+  }
+  .btn-icon:active { transform: scale(0.96); }
+  .btn-end {
+    background: var(--card-bg);
+    color: var(--text-muted);
+    border: 1.5px solid var(--border);
+    font-size: 13px;
+    flex: 0 0 auto;
+    padding: 0 14px;
+  }
+  .btn-end:active { transform: scale(0.98); }
+
+  .counter {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 12px;
+  }
+
+  /* START */
+  .start-screen { width: 100%; max-width: 480px; }
+  .intro-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+  .intro-card p { font-size: 14px; line-height: 1.7; color: var(--text-muted); margin-bottom: 10px; }
+  .intro-card p:last-child { margin-bottom: 0; }
+  .intro-card strong { color: var(--text); font-weight: 500; }
+
+  /* DONE */
+  .done-screen { width: 100%; max-width: 480px; }
+  .done-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 24px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    text-align: center;
+  }
+  .done-icon { font-size: 32px; margin-bottom: 12px; }
+  .done-card h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 21px;
+    margin-bottom: 16px;
+  }
+  .open-q-box {
+    background: var(--accent-light);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .open-q-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .open-q-text {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 18px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .ressource-hint {
+    background: #EAF4EC;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 14px;
+    color: #2D6A3F;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  footer {
+    margin-top: 28px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="label">Ressourcen-Gespräch</div>
+  <h1>Lernen in einer Kultur<br>der Digitalität</h1>
+</header>
+
+<!-- START -->
+<div id="start-screen" class="start-screen">
+  <div class="intro-card">
+    <p><strong>So geht's:</strong> Eine Karte nach der anderen wird aufgedeckt. Diskutiert die Frage in eurer Gruppe.</p>
+    <p>Mit den <strong>Kategorien</strong> könnt ihr gezielt Themen wählen. Mit <strong>«Abschliessen»</strong> beendet ihr die Runde jederzeit.</p>
+    <p>Notiert auf den <strong>Ressourcenkarten</strong>, was ihr heute Nachmittag ins Team einbringt.</p>
+  </div>
+  <button class="btn btn-primary" onclick="startGame()" style="width:100%;">Erste Frage aufdecken →</button>
+</div>
+
+<!-- GAME -->
+<div id="game-screen" style="display:none; width:100%; max-width:480px;">
+  <div class="filter-bar" id="filter-bar"></div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+  <div class="card-container">
+    <div class="card" id="card">
+      <div class="card-wie" id="card-wie">Wie</div>
+      <div class="card-question" id="card-question"></div>
+      <div class="card-tag" id="card-tag"></div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-icon" onclick="reshuffleFilter()" title="Neu mischen">↺</button>
+    <button class="btn btn-primary" onclick="nextCard()">Nächste Frage →</button>
+    <button class="btn btn-end" onclick="endSession()">Abschliessen</button>
+  </div>
+  <div class="counter" id="counter"></div>
+</div>
+
+<!-- DONE -->
+<div id="done-screen" class="done-screen" style="display:none">
+  <div class="done-card">
+    <div class="done-icon">✦</div>
+    <h2>Noch eine letzte Runde</h2>
+    <div class="open-q-box">
+      <div class="open-q-label">Offene Frage</div>
+      <div class="open-q-text">Was haben wir noch nicht besprochen – welche Frage fehlt in dieser Sammlung?</div>
+    </div>
+    <div class="ressource-hint">✎ &nbsp;Füllt jetzt eure Ressourcenkarten aus – was bringt ihr heute Nachmittag ins Team ein?</div>
+  </div>
+  <button class="btn btn-primary" onclick="restart()" style="width:100%;">Nochmals von vorne</button>
+</div>
+
+<footer>Lernen in einer Kultur der Digitalität · PHGR</footer>
+
+<script>
+const KATEGORIEN = ['Alle', 'Aufgaben', 'Haltung', 'Tools', 'KI', 'Schüler:innen', 'Zusammenarbeit'];
+
+const fragen = [
+  // AUFGABEN
+  { text: "Wie verändert sich eine Aufgabe, wenn das Endprodukt digital ist?", kat: "Aufgaben" },
+  { text: "Wie verändert man eine Aufgabe so, dass KI nicht einfach die Antwort liefern kann?", kat: "Aufgaben" },
+  { text: "Wie beurteilt man eine Arbeit, bei der KI mitgeholfen hat?", kat: "Aufgaben" },
+  { text: "Wie differenziert man digital – also mit unterschiedlichen Zugängen für unterschiedliche Lernende?", kat: "Aufgaben" },
+  { text: "Wie gestaltet man Aufgaben so, dass der Denkprozess sichtbar bleibt – nicht nur das Endprodukt?", kat: "Aufgaben" },
+
+  // HALTUNG
+  { text: "Wie kann aus einem digitalen Misserfolg im Unterricht trotzdem etwas Wertvolles entstehen?", kat: "Haltung" },
+  { text: "Wie geht man mit Enttäuschungen um, wenn ein gehyptes Tool im Unterricht nicht funktioniert?", kat: "Haltung" },
+  { text: "Wie findet man den Mut, etwas Digitales auszuprobieren, das man noch nicht kennt?", kat: "Haltung" },
+  { text: "Wie geht man damit um, wenn Schüler:innen ein Tool besser beherrschen als man selbst?", kat: "Haltung" },
+  { text: "Wie entscheidet man, wann man ein Gerät bewusst weglässt?", kat: "Haltung" },
+  { text: "Wie bleibt man neugierig, ohne sich von jedem neuen Tool überwältigen zu lassen?", kat: "Haltung" },
+
+  // TOOLS
+  { text: "Wie findet man digitale Werkzeuge, die wirklich Zeit sparen?", kat: "Tools" },
+  { text: "Wie wird ein digitales Werkzeug so selbstverständlich, dass man gar nicht mehr darüber nachdenkt?", kat: "Tools" },
+  { text: "Wie adaptiert man eine fremde Unterrichtsidee und macht sie besser als das Original?", kat: "Tools" },
+  { text: "Wie behält man den Überblick, wenn ständig neue Tools auftauchen?", kat: "Tools" },
+  { text: "Wie wählt man das richtige Werkzeug für den richtigen Moment – und lässt den Rest weg?", kat: "Tools" },
+
+  // KI
+  { text: "Wie nutzt man KI so, dass die eigene Arbeit leichter wird – ohne das Denken abzugeben?", kat: "KI" },
+  { text: "Wie verändert KI das Verhältnis zwischen Lehrperson und Wissen?", kat: "KI" },
+  { text: "Wie geht man damit um, dass KI manchmal plausibler klingt als sie richtig liegt?", kat: "KI" },
+  { text: "Wie erklärt man KI so, dass auch skeptische Kolleg:innen neugierig werden?", kat: "KI" },
+  { text: "Wie nutzt man KI als Lernbegleitung – nicht als Abkürzung?", kat: "KI" },
+
+  // SCHÜLER:INNEN
+  { text: "Wie kann man Schüler:innen etwas produzieren lassen, das ein echtes Publikum erreicht?", kat: "Schüler:innen" },
+  { text: "Wie begleitet man Schüler:innen dabei, Informationen kritisch zu hinterfragen?", kat: "Schüler:innen" },
+  { text: "Wie bringt man Schüler:innen dazu, über ihre digitalen Spuren nachzudenken?", kat: "Schüler:innen" },
+  { text: "Wie spricht man mit Schüler:innen darüber, was Maschinen können – und was nicht?", kat: "Schüler:innen" },
+  { text: "Wie schafft man Momente, in denen Schüler:innen sich gegenseitig digitale Dinge beibringen?", kat: "Schüler:innen" },
+
+  // ZUSAMMENARBEIT
+  { text: "Wie gelingt echte digitale Zusammenarbeit – nicht nur nebeneinander?", kat: "Zusammenarbeit" },
+  { text: "Wie erklärt man Eltern, warum digitale Medien im Unterricht sinnvoll sind?", kat: "Zusammenarbeit" },
+  { text: "Wie teilt man gute digitale Unterrichtsideen im Team – ohne dass es nach Pflicht klingt?", kat: "Zusammenarbeit" },
+  { text: "Wie entwickelt ein ganzes Team gemeinsam eine Haltung zu KI im Unterricht?", kat: "Zusammenarbeit" },
+];
+
+let shuffled = [];
+let currentIndex = 0;
+let activeFilter = 'Alle';
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getFiltered() {
+  return activeFilter === 'Alle' ? [...fragen] : fragen.filter(f => f.kat === activeFilter);
+}
+
+function buildFilterBar() {
+  const bar = document.getElementById('filter-bar');
+  bar.innerHTML = '';
+  KATEGORIEN.forEach(kat => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (kat === activeFilter ? ' active' : '');
+    btn.textContent = kat;
+    btn.onclick = () => setFilter(kat);
+    bar.appendChild(btn);
+  });
+}
+
+function setFilter(kat) {
+  activeFilter = kat;
+  buildFilterBar();
+  shuffled = shuffle(getFiltered());
+  currentIndex = 0;
+  showCard();
+}
+
+function reshuffleFilter() {
+  shuffled = shuffle(getFiltered());
+  currentIndex = 0;
+  showCard();
+}
+
+function startGame() {
+  shuffled = shuffle(getFiltered());
+  currentIndex = 0;
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('done-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'block';
+  buildFilterBar();
+  showCard();
+}
+
+function showCard() {
+  const card = document.getElementById('card');
+  card.classList.add('hidden');
+  setTimeout(() => {
+    const q = shuffled[currentIndex];
+    const isWie = q.text.startsWith('Wie');
+    const rest = isWie ? q.text.slice(3).trimStart() : q.text;
+    document.getElementById('card-wie').style.visibility = isWie ? 'visible' : 'hidden';
+    document.getElementById('card-question').textContent = rest;
+    document.getElementById('card-tag').textContent = q.kat;
+    const pct = ((currentIndex + 1) / shuffled.length) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    const remaining = shuffled.length - currentIndex - 1;
+    document.getElementById('counter').textContent = remaining === 0
+      ? 'Letzte Frage in dieser Auswahl'
+      : `Noch ${remaining} Frage${remaining !== 1 ? 'n' : ''} im Stapel`;
+    card.classList.remove('hidden');
+  }, 250);
+}
+
+function nextCard() {
+  if (currentIndex < shuffled.length - 1) {
+    currentIndex++;
+    showCard();
+  } else {
+    endSession();
+  }
+}
+
+function endSession() {
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('done-screen').style.display = 'block';
+}
+
+function restart() {
+  activeFilter = 'Alle';
+  document.getElementById('done-screen').style.display = 'none';
+  startGame();
+}
+</script>
+</body>
+</html>
